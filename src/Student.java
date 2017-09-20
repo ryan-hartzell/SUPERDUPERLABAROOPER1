@@ -22,5 +22,37 @@ public class Student {
         this.tFirstName = tfn;
     }
 
+    public double getGPA() {
+        return this.gpa;
+    }
+
+    public int getGrade() {
+        return this.grade;
+    }
+
+    public int getClassroom() {
+        return this.classroom;
+    }
+
+    public int getBus() {
+        return this.bus;
+    }
+
+    public String getLastName() {
+        return this.lastName;
+    }
+
+    public String getFirstName() {
+        return this.firstName;
+    }
+
+    public String gettLastName() {
+        return this.tLastName;
+    }
+
+    public String gettFirstName() {
+        return this.tFirstName;
+    }
+
 
 }
