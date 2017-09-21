@@ -8,25 +8,21 @@ import java.util.Scanner;
  * Created by Ryan Hartzell on 9/19/2017.
  */
 public class schoolsearch {
-    public static void main (String[] argv) {
+    public static void main(String[] argv) {
         FileReader schoolFile;
 
         try {
             schoolFile = new FileReader("students.txt");
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             System.out.println("Can't find students.txt file");
             return;
         }
 
         HashSet students = parseFile(new Scanner(schoolFile));
-
         interactiveLoop(students);
-
-
     }
 
-    private static HashSet parseFile (Scanner in) {
+    private static HashSet parseFile(Scanner in) {
         HashSet set = new HashSet();
         Scanner lineScanner;
         Student temp;
@@ -64,15 +60,14 @@ public class schoolsearch {
         while (s.hasNextLine()) {
             Scanner line = new Scanner(s.nextLine());
 
-            switch(line.next()) {
+            switch (line.next()) {
                 case "Average:":
                 case "A:":
                     int grade = line.nextInt();
                     if (line.hasNext()) {
                         System.out.println("Unrecognized command");
-                        System.out.println("Usage: A: <number>");
-                    }
-                    else {
+                        System.out.println("Usage: A[verage]: <number>");
+                    } else {
                         average(students, grade);
                     }
                     break;
@@ -81,9 +76,8 @@ public class schoolsearch {
                     int bus = line.nextInt();
                     if (line.hasNext()) {
                         System.out.println("Unrecognized command");
-                        System.out.println("Usage: B: <number>");
-                    }
-                    else {
+                        System.out.println("Usage: B[us]: <number>");
+                    } else {
                         busStudents(students, bus);
                     }
                     break;
@@ -96,15 +90,71 @@ public class schoolsearch {
                     }
                     if (line.hasNext()) {
                         System.out.println("Unrecognized command");
-                        System.out.println("Usage: G: <number> [[H]|[L]]");
+                        System.out.println("Usage: G[rage]: <number> [[H]|[L]]");
+                    } else {
+                        gradeStudents(students, targetGrade, extreme);
+                    }
+                    break;
+                case "Info":
+                case "I":
+                    if (line.hasNext()) {
+                        System.out.println("Unrecognized command");
+                        System.out.println("Usage: I[nfo]");
+                    } else {
+                        getInfo(students);
+                    }
+                    break;
+                case "Quit":
+                case "Q":
+                    return;
+                case "Student:":
+                case "S:":
+                    String lastname = line.next();
+                    boolean showBus = false;
+
+                    if (line.hasNext()) {
+                        String busString = line.next();
+                        if (busString.equals("Bus") || busString.equals("B"))
+                            showBus = true;
+                        else {
+                            System.out.println("Unrecognized command");
+                            System.out.println("Usage: S[tudent]: <lastname>");
+                            break;
+                        }
+                    }
+
+                    if (line.hasNext()) {
+                        System.out.println("Unrecognized command");
+                        System.out.println("Usage: S[tudent]: <lastname>");
+                    } else {
+                        getStudent(students, lastname, showBus);
+                    }
+                    break;
+                case "Teacher:":
+                case "T:":
+                    String tLastName;
+
+                    if (line.hasNext()) {
+                        tLastName = line.next();
                     }
                     else {
-                        gradeStudents(students, targetGrade, extreme);
+                        System.out.println("Unrecognized command");
+                        System.out.println("Usage: T[eacher]: <lastname>");
+                        break;
+                    }
+
+                    if (line.hasNext()) {
+                        System.out.println("Unrecognized command");
+                        System.out.println("Usage: T[eacher]: <lastname>");
+                    }
+                    else {
+                        getTeacher(students, tLastName);
                     }
                     break;
                 default:
                     System.out.println("Unrecognized command");
             }
+            System.out.print("> ");
         }
     }
 
@@ -114,7 +164,7 @@ public class schoolsearch {
         int numInGrade = 0;
 
         while (iter.hasNext()) {
-            Student s = (Student)iter.next();
+            Student s = (Student) iter.next();
             if (s.getGrade() == grade) {
                 sum += s.getGPA();
                 numInGrade++;
@@ -130,12 +180,12 @@ public class schoolsearch {
         boolean any = false;
 
         while (iter.hasNext()) {
-            Student s = (Student)iter.next();
+            Student s = (Student) iter.next();
             if (s.getBus() == bus) {
                 if (!any) {
                     any = true;
                 }
-                System.out.print(s.getLastName()+ ",");
+                System.out.print(s.getLastName() + ",");
                 System.out.print(s.getFirstName() + ",");
                 System.out.print(s.getGrade() + ",");
                 System.out.println(s.getClassroom());
@@ -152,22 +202,19 @@ public class schoolsearch {
         Student studentEx = null;
 
         while (iter.hasNext()) {
-            Student s = (Student)iter.next();
+            Student s = (Student) iter.next();
             if (s.getGrade() == grade) {
                 if (extreme.equals("")) {
                     System.out.print(s.getLastName() + ",");
                     System.out.println(s.getFirstName());
-                }
-                else {
+                } else {
                     if (studentEx == null) {
                         studentEx = s;
-                    }
-                    else if (extreme.equals("H") || extreme.equals("High")) {
+                    } else if (extreme.equals("H") || extreme.equals("High")) {
                         if (studentEx.getGPA() < s.getGPA()) {
                             studentEx = s;
                         }
-                    }
-                    else if (extreme.equals("L") || extreme.equals("Low")) {
+                    } else if (extreme.equals("L") || extreme.equals("Low")) {
                         if (studentEx.getGPA() > s.getGPA()) {
                             studentEx = s;
                         }
@@ -183,6 +230,56 @@ public class schoolsearch {
             System.out.print(studentEx.getGPA() + ",");
             System.out.print(studentEx.gettLastName() + ",");
             System.out.println(studentEx.gettLastName());
+        }
+    }
+
+    private static void getInfo(HashSet students) {
+        int[] numInGrade = new int[7];
+        Iterator iter = students.iterator();
+
+        while (iter.hasNext()) {
+            Student s = (Student) iter.next();
+            numInGrade[s.getGrade()]++;
+        }
+
+        for (int i = 0; i < numInGrade.length; i++) {
+            System.out.println(i + ": " + numInGrade[i]);
+        }
+    }
+
+    private static void getStudent(HashSet students, String lastname, boolean bus) {
+        Iterator iter = students.iterator();
+
+        while (iter.hasNext()) {
+            Student s = (Student)iter.next();
+
+            if (s.getLastName().equals(lastname)) {
+                System.out.print(s.getLastName() + ",");
+                System.out.print(s.getFirstName() + ",");
+                if (!bus) {
+                    System.out.print(s.getGrade() + ",");
+                    System.out.print(s.getClassroom() + ",");
+                    System.out.print(s.gettLastName() + ",");
+                    System.out.println(s.gettFirstName());
+                }
+                else {
+                    System.out.println(s.getBus());
+                }
+
+            }
+        }
+    }
+
+    private static void getTeacher(HashSet students, String lastname) {
+        Iterator iter = students.iterator();
+
+        while (iter.hasNext()) {
+            Student s = (Student)iter.next();
+
+            if (s.gettLastName().equals(lastname)) {
+                System.out.print(s.getLastName() + ",");
+                System.out.println(s.getFirstName());
+            }
         }
     }
 }
