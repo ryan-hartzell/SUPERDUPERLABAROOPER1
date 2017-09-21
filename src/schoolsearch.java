@@ -312,7 +312,7 @@ public class schoolsearch {
             System.out.print(studentEx.getBus() + ",");
             System.out.print(studentEx.getGPA() + ",");
             System.out.print(studentEx.gettLastName() + ",");
-            System.out.println(studentEx.gettLastName());
+            System.out.println(studentEx.gettFirstName());
         }
     }
 
