@@ -4,12 +4,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Scanner;
 
-/**
- * Created by Ryan Hartzell on 9/19/2017.
- */
 public class schoolsearch {
     public static void main(String[] argv) {
         FileReader schoolFile;
+        HashSet<Student> students;
 
         try {
             schoolFile = new FileReader("students.txt");
@@ -18,32 +16,69 @@ public class schoolsearch {
             return;
         }
 
-        HashSet<Student> students = parseFile(new Scanner(schoolFile));
+        try {
+            students = parseFile(new Scanner(schoolFile));
+        }
+        catch (Exception e) {
+            System.out.println("student.txt file has incorrect format");
+            return;
+        }
+
         interactiveLoop(students);
     }
 
-    private static HashSet<Student> parseFile(Scanner in) {
+    private static HashSet<Student> parseFile(Scanner in) throws Exception {
         HashSet<Student> set = new HashSet<>();
-        Scanner lineScanner;
+        Scanner line;
         Student temp;
-        String line, fn, ln, tfn, tln;
+        String fn, ln, tfn, tln;
         int cl, bu, gr;
         double gpa;
 
 
         while (in.hasNextLine()) {
-            line = in.nextLine();
-            lineScanner = new Scanner(line);
-            lineScanner.useDelimiter(",");
+            line = new Scanner(in.nextLine());
+            line.useDelimiter(",");
 
-            ln = lineScanner.next();
-            fn = lineScanner.next();
-            gr = lineScanner.nextInt();
-            cl = lineScanner.nextInt();
-            bu = lineScanner.nextInt();
-            gpa = lineScanner.nextDouble();
-            tln = lineScanner.next();
-            tfn = lineScanner.next();
+            if (!line.hasNext()) {
+                throw new Exception("Invalid format");
+            }
+            ln = line.next();
+
+            if (!line.hasNext()) {
+                throw new Exception("Invalid format");
+            }
+            fn = line.next();
+
+            if (!line.hasNextInt()) {
+                throw new Exception("Invalid format");
+            }
+            gr = line.nextInt();
+
+            if (!line.hasNextInt()) {
+                throw new Exception("Invalid format");
+            }
+            cl = line.nextInt();
+
+            if (!line.hasNextInt()) {
+                throw new Exception("Invalid format");
+            }
+            bu = line.nextInt();
+
+            if (!line.hasNextDouble()) {
+                throw new Exception("Invalid format");
+            }
+            gpa = line.nextDouble();
+
+            if (!line.hasNext()) {
+                throw new Exception("Invalid format");
+            }
+            tln = line.next();
+
+            if (!line.hasNext()) {
+                throw new Exception("Invalid format");
+            }
+            tfn = line.next();
 
             temp = new Student(ln, fn, gr, cl, bu, gpa, tln, tfn);
             set.add(temp);
@@ -54,6 +89,13 @@ public class schoolsearch {
 
     private static void interactiveLoop(HashSet<Student> students) {
         Scanner s = new Scanner(System.in);
+        System.out.println("Usage:");
+        System.out.println("\tA[verage]: <number>");
+        System.out.println("\tB[us]: <number>");
+        System.out.println("\tG[rage]: <number> [[H]|[L]]");
+        System.out.println("\tI[nfo]");
+        System.out.println("\tS[tudent]: <lastname>");
+        System.out.println("\tT[eacher]: <lastname>");
         System.out.print("> ");
 
         while (s.hasNextLine()) {
